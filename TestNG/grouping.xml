@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+<groups>
+<run>
+ <include name="sanity"/> 
+<!--<include name="regression"/>-->
+<!--<exclude name="master"/>-->
+<include name="master"/>
+</run>
+
+</groups>
+  <test thread-count="5" name="Test">
+     <parameter name="browser" value="chrom">
+    <classes>
+      <class name="com.sausedemo.qa.TestCases.LoginDDT_Test"/>
+      <class name="com.sausedemo.qa.TestCases.Login_Test"/>
+      <class name="com.sausedemo.qa.TestCases.Homepage_Products_Test"/>
+    </classes>
+    </parameter>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->
+
