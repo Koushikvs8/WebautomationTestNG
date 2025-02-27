@@ -22,12 +22,12 @@ public class Login_Test extends BaseClass{
 	@Test(groups = {"master","smoke","regression"})
 	public void ValidateLogin() throws InterruptedException
 	{   
-		driver.navigate().refresh();
-		LoginPage login=new LoginPage(driver);
+		getdriver().navigate().refresh();
+		LoginPage login=new LoginPage(getdriver());
 		login.setLoginCredentials(prop.getProperty("username"),prop.getProperty("password"));
 		login.clickLoginBtn();
 		Thread.sleep(2000);
-		HomePage homepage=new HomePage(driver);
+		HomePage homepage=new HomePage(getdriver());
 		try {
 			boolean status=homepage.displaymenu();
 

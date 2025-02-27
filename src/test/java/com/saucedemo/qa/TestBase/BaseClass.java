@@ -4,6 +4,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
 import java.io.File;
@@ -26,17 +27,17 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class BaseClass {
-	public static WebDriver driver;
 	public Properties prop;
-	
-	@BeforeClass(groups = {"master","smoke","regression"})
-	@Parameters({"browser"})
-	public void SetUp(String browser) throws IOException
+	 static ThreadLocal<WebDriver> driver =new ThreadLocal<WebDriver>();
+    @Parameters("browser")
+	@BeforeClass
+	public void SetUp(@Optional String browsers) throws IOException
 	{    
+		String chosenBrowser=null;
 		
-		FileInputStream file;
 		try {
-			file = new FileInputStream(System.getProperty("user.dir") +"\\src\\test\\resources\\config.properties");
+			FileInputStream file;
+			file = new FileInputStream("C:\\Usereclipsonly\\Koushikworkspace1\\JavaSEliniumAutomation\\saucedemo\\src\\test\\resources\\config.properties");
 			prop=new Properties();
 			prop.load(file);
 		} catch (FileNotFoundException e) {
@@ -44,37 +45,58 @@ public class BaseClass {
 			e.printStackTrace();
 		}
 		String urlLink=prop.getProperty("url");
-		String Browser=browser;
+		String browserFromProperties=prop.getProperty("Brw");
+		String browserFromMaven=System.getProperty(browsers);
+		System.out.println(browsers);
+		 chosenBrowser = (browsers !=null && !browsers.isEmpty()) ? browsers : 
+             (browserFromMaven != null && !browserFromMaven.isEmpty()) ? browserFromMaven : 
+             browserFromProperties;
 		
-		if(Browser.equalsIgnoreCase("chrom"))
-		{
-			driver=new ChromeDriver();
-			driver.get(urlLink);
-		}
-		else if (Browser.equalsIgnoreCase("Edge")) {
 			
-				driver=new EdgeDriver();
-			    driver.get(urlLink);
-		}
-		else if (Browser.equalsIgnoreCase("firfox")) {
-			{   driver=new FirefoxDriver();
-				driver.get(urlLink);
-			}
-			driver.manage().deleteAllCookies();
-			driver.manage().window().maximize();
-			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		
+		
+		   System.out.println("Executing tests on: " + chosenBrowser);
+
+	        if (driver.get() == null) {
+	            switch (chosenBrowser.toLowerCase()) {
+	                case "chrome":
+	                    driver.set(new ChromeDriver());
+	                    break;
+	                case "edge":
+	                    driver.set(new EdgeDriver());
+	                    break;
+	                case "firefox":
+	                    driver.set(new FirefoxDriver());
+	                    break;
+	                default:
+	                    throw new IllegalArgumentException("Invalid browser specified: " + chosenBrowser);
+	            }
+	        }
+	    
+			driver.get().manage().deleteAllCookies();
+			driver.get().manage().window().maximize();
+			driver.get().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+			driver.get().get(urlLink);
 		}
 	
 		
-	}
-
+	
+public static WebDriver getdriver()
+{
+	return driver.get();
+}
 	
 	
 	@AfterClass
 	public void tearDown() throws InterruptedException {
 		Thread.sleep(2000);
-	 driver.close();
+		if(driver.get()!=null)
+		{
+	 driver.get().close();
+		}
+		driver.remove();
 	}
+	
 	//screenshot capture
 	public String captureScreen(String tname)
 	{

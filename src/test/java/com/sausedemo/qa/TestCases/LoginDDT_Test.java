@@ -12,18 +12,18 @@ public class LoginDDT_Test extends BaseClass{
 	@Test(dataProvider = "dp by Arry Object", dataProviderClass = DataProviders.class)
 	public void ValidateLogin(String name, String pwd) throws InterruptedException
 	{
-		driver.navigate().refresh();
-		LoginPage login=new LoginPage(driver);
+		getdriver().navigate().refresh();
+		LoginPage login=new LoginPage(getdriver());
 		System.out.println("entering creds");
 		login.setLoginCredentials(name,pwd);
 		login.clickLoginBtn();
 		Thread.sleep(2000);
-		HomePage homepage=new HomePage(driver);
+		HomePage homepage=new HomePage(getdriver());
 		try {
 			boolean status=homepage.displaymenu();
 
 			homepage.clickBtnMenu();
-			Thread.sleep(2000);
+			
 			homepage.clickBtnLogout();
 			System.out.println("User is able to login");
 			Assert.assertTrue(true);
@@ -31,7 +31,7 @@ public class LoginDDT_Test extends BaseClass{
 		} catch (Exception e) {
 			// TODO: handle exception
 			
-			Thread.sleep(2000);
+			
 			System.out.println("User is not able to login with invalid data");
 			Assert.assertTrue(true);
 			
